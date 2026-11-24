@@ -21,7 +21,7 @@ def evaluate(model):
     return {"Train_error" : rmse(train_preds, train_targets), "Val_error" : rmse(val_preds, val_targets)}
 
 def predict_and_submit(model, test_set, fname): 
-    test_preds = model1.predict(test_set)
+    test_preds = model.predict(test_set)
     submission_df = pd.read_csv(data_dir / "new-york-city-taxi-fare-prediction/sample_submission.csv")
     submission_df["fare_amount"] = test_preds 
     submission_df.to_csv(data_dir / f"submission/{fname}.csv", index = False)
