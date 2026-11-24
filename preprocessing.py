@@ -95,7 +95,7 @@ landmarks_distance(test_df)
 # remove outliers (only five main cols because remained cols are created by five original cols)
 # print(test_df.describe())
 
-
+# với kiểu giá trị ngoại lai thì ta xét dựa vào test_df 
 def remove_outliers(df):
     return df[(df['fare_amount'] >= 1.) & 
               (df['fare_amount'] <= 500.) &
