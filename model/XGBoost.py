@@ -3,32 +3,28 @@ import plotly.express as px
 import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns 
-import numpy as np  
+
 from sklearn.metrics import root_mean_squared_error
 import optuna
-import xgboost
+from xgboost import XGBRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import KFold
+import pandas as pd 
+import numpy as np  
+import utils 
 
-from pathlib import Path 
+train_inputs, train_targets, val_inputs, val_targets, test_inputs = utils.load_data() 
 
-data_dir = Path(__file__).resolve().parent.parent 
+def objective(trial): 
+    params = {
 
-import pyarrow 
+    }
 
-test_df = pd.read_parquet(data_dir / "test.parquet") 
-train_df = pd.read_parquet(data_dir / "train.parquet")
-val_df = pd.read_parquet(data_dir / "val.parquet")
+    model = XGBRegressor() 
+    model.fit(train_inputs, train_targets)
+    val_preds = model.predict(val_inputs) 
+    return utils.rmse(val_preds, val_targets)
 
-target_col = "fare_amount" 
-drop_cols = ["key", "fare_amount", "pickup_datetime"]
-input_cols = [c for c in train_df.columns if c not in drop_cols] 
-
-test_inputs = test_df[input_cols] 
-
-train_inputs = train_df[input_cols] 
-train_targets = train_df[target_col] 
-
-val_inputs = val_df[input_cols] 
-val_targets = val_df[target_col] 
+study = optuna.create_study(direction = "minimize")
+study.optimize(objective, n_trials = 30, show_progress_bar = True, gc_after_trial = True) 
 
